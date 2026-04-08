@@ -6,6 +6,7 @@ import {
   Eye, ChevronRight,
 } from 'lucide-react';
 import { HeroGeometric } from '../components/ui/shape-landing-hero';
+import { LiquidButton } from '../components/ui/liquid-glass-button';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -61,19 +62,21 @@ export default function Landing() {
         description="A real-time financial overview for Rosemary Schafer's personal and trust accounts. Every dollar tracked, every month visualized, powered by AI insights."
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/25 text-base"
-          >
-            Open Dashboard
-            <ArrowRight className="w-5 h-5" />
+          <Link to="/dashboard">
+            <LiquidButton size="xl" className="text-cyan-300 text-base">
+              <span className="flex items-center gap-2">
+                Open Dashboard
+                <ArrowRight className="w-5 h-5" />
+              </span>
+            </LiquidButton>
           </Link>
-          <a
-            href="#features"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-white border border-white/[0.08] font-medium rounded-2xl transition-all duration-300 text-base"
-          >
-            See Features
-            <ChevronRight className="w-4 h-4" />
+          <a href="#features">
+            <LiquidButton size="xl" variant="outline" className="text-white/70 text-base">
+              <span className="flex items-center gap-2">
+                See Features
+                <ChevronRight className="w-4 h-4" />
+              </span>
+            </LiquidButton>
           </a>
         </div>
       </HeroGeometric>
@@ -278,12 +281,13 @@ export default function Landing() {
             <p className="text-white/40 text-lg mb-10">
               Your complete 2025 financial picture is one click away.
             </p>
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-3 px-10 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/25 text-lg"
-            >
-              Open Dashboard
-              <ArrowRight className="w-5 h-5" />
+            <Link to="/dashboard">
+              <LiquidButton size="xxl" className="text-cyan-300 text-lg">
+                <span className="flex items-center gap-3">
+                  Open Dashboard
+                  <ArrowRight className="w-5 h-5" />
+                </span>
+              </LiquidButton>
             </Link>
           </motion.div>
         </div>

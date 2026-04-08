@@ -62,7 +62,7 @@ export default function VisaBreakdown({ visa }) {
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+    <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
       <h3 className="text-lg font-semibold text-white mb-1">Visa Spending</h3>
       <p className="text-xs text-gray-500 mb-4">
         Total: ${visa.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}

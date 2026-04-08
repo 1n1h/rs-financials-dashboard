@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useFinancials } from '../context/FinancialsContext';
+import { LiquidButton } from './ui/liquid-glass-button';
 
 export default function FileUpload() {
   const { handleFileUpload } = useFinancials();
@@ -22,12 +23,13 @@ export default function FileUpload() {
         onChange={onChange}
         className="hidden"
       />
-      <button
+      <LiquidButton
+        size="sm"
         onClick={() => inputRef.current?.click()}
-        className="px-4 py-2 text-sm font-medium text-gray-300 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+        className="text-white/50"
       >
         Upload File
-      </button>
+      </LiquidButton>
     </>
   );
 }

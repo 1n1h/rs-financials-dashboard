@@ -61,15 +61,15 @@ export default function MonthDetail({ data, monthIdx }) {
     <div className="space-y-6">
       {/* Month Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5">
+        <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
           <p className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-1">Income — {month}</p>
           <p className="text-2xl font-bold text-emerald-400">{fmt(monthIncome)}</p>
         </div>
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5">
+        <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
           <p className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-1">Expenses — {month}</p>
           <p className="text-2xl font-bold text-red-400">{fmt(monthExpenses)}</p>
         </div>
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5">
+        <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
           <p className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-1">Net — {month}</p>
           <p className={`text-2xl font-bold ${monthNet >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{fmt(monthNet)}</p>
         </div>
@@ -77,7 +77,7 @@ export default function MonthDetail({ data, monthIdx }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Income Detail */}
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+        <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Income — {month} 2025</h3>
           <SectionTable title="Personal Income" items={incomeItems.filter(i => i.section === 'Personal')} monthIdx={monthIdx} color="text-emerald-400" />
           <SectionTable title="Trust Income" items={incomeItems.filter(i => i.section === 'Trust')} monthIdx={monthIdx} color="text-cyan-400" />
@@ -88,7 +88,7 @@ export default function MonthDetail({ data, monthIdx }) {
         </div>
 
         {/* Expense Detail */}
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+        <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Expenses — {month} 2025</h3>
           <SectionTable title="Personal Visa" items={expenseItems.filter(i => i.section === 'Personal Visa')} monthIdx={monthIdx} color="text-red-400" />
           <SectionTable title="Personal Other" items={expenseItems.filter(i => i.section === 'Personal')} monthIdx={monthIdx} color="text-orange-400" />
@@ -104,7 +104,7 @@ export default function MonthDetail({ data, monthIdx }) {
 
       {/* Balances for the month */}
       {balanceRows.length > 0 && (
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+        <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Account Balances — End of {month}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {balanceRows.map(b => (

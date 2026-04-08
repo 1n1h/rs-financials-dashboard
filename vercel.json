@@ -1,0 +1,11 @@
+{
+  "framework": "vite",
+  "functions": {
+    "api/chat.js": {
+      "runtime": "edge"
+    }
+  },
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

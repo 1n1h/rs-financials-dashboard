@@ -1,0 +1,346 @@
+Build a React web app financial dashboard for a bookkeeping client named Rosemary Schafer.
+This will be deployed on Vercel via GitHub. Use React (Vite), Tailwind CSS, and 
+react-chartjs-2. Style inspiration: fathom.video — dark background, bright cyan accent, 
+glassmorphism cards, premium SaaS feel.
+
+---
+
+TECH STACK:
+- React (Vite)
+- Tailwind CSS
+- react-chartjs-2 + Chart.js
+- SheetJS (xlsx) — to parse the Excel file directly
+- PapaParse — for CSV uploads
+- OpenRouter API — AI chat assistant (server-side proxied)
+- Vercel Edge Functions — to proxy OpenRouter API key securely
+- React Router
+
+---
+
+EXCEL DATA SOURCE:
+The file is: 2025_Rose_NEW_and_IMPROVED_Financials.xlsx
+It is located in the /data folder of this project.
+
+This file has 4 sheets:
+  1. "RS P&L - 2025"       ← PRIMARY: use this for all income, expense, and net data
+  2. "RS BS - 2025"        ← use for account balances by month
+  3. "RS Personal P&L - 2024"  ← use for year-over-year comparisons (optional)
+  4. "RS Personal BS - 2024"   ← use for prior year balances (optional)
+
+ON APP STARTUP, do the following:
+  - Use SheetJS (xlsx library) to read and parse the Excel file at /data/2025_Rose_NEW_and_IMPROVED_Financials.xlsx
+  - Extract all data programmatically from the sheets — do NOT hardcode any dollar values
+  - Store parsed data in React state/context so all components read from it
+  - If parsing fails, show a clear error state with a fallback upload prompt
+
+HOW TO PARSE "RS P&L - 2025":
+  The sheet has a wide layout — rows are line items, columns are months (Jan–Dec) plus a TOTAL column.
+  Key rows to extract (match by the label text in column B):
+  
+  INCOME:
+  - "TOTAL PERSONAL INCOME"     → 12 monthly values + total
+  - "TOTAL TRUST INCOME"        → 12 monthly values + total
+  - "INCOME - TOTAL (PERSONAL & TRUST)" → combined monthly + total
+
+  INCOME LINE ITEMS (for breakdown chart):
+  - "9553  Long Term Care Reimb"
+  - "9553  Social Security"
+  - "5777 Other"                → trust transfers
+  - "3952  Rental Income"       → VV1 rental
+  - "7850  Brokerage (closed Acct in 2025)"
+  - "5777  Interest" + "3952  VV1 Interest" + "9553  Interest" → combine as Interest
+
+  EXPENSES:
+  - "TOTAL PERSONAL EXPENSES"   → 12 monthly values + total
+  - "TOTAL TRUST EXPENSES"      → 12 monthly values + total
+  - "EXPENSE - TOTAL (PERSONAL & TRUST)" → combined monthly + total
+
+  EXPENSE LINE ITEMS:
+  - "VISA CC"                   → personal Visa total by month
+  - "Blue Cross - Blue Shield"
+  - "Visa  Clothing"
+  - "Visa Meals/Entertainment"
+  - "Visa Personal Supplies"
+  - "Visa Medical"
+  - "Visa Pharmacy/Medication"
+  - "Visa Hair & Nails"
+  - "Visa Aide"
+  - "HOA"
+  - "Taxes" (under VV1 operating)
+  - "Visa Repair + Maintenance"
+  - "NJGov LLC Registration"
+  - "Utilities"
+  - "Insurance" (under VV1 operating)
+  - "Township"
+  - "Aide Help"
+  - "Asst Living/LTC Reimbursement" (personal other)
+  - "Reimbursement to WS for LTC" (trust other)
+  - "Accountant" + "Bookkeeper" + "Legal" → combine as Professional Fees
+
+  NET:
+  - "NET INCOME"                → 12 monthly values + total
+
+  BALANCES (bottom of P&L sheet):
+  - "9553   (main Cking)"       → personal checking monthly balances
+  - "5777    (main Cking)"      → trust checking monthly balances
+  - "3952   (VV1 main cking)"   → VV1 checking monthly balances
+  - "6121   (VV1 sec deposit)"  → security deposit monthly balances
+  - "5299   (brokerage)"        → trust brokerage monthly balances
+  - "TOTAL PERSONAL BALANCE"
+  - "TOTAL TRUST BALANCE"
+  - "TOTAL BALANCE (PERSONAL & TRUST)"
+
+PARSING STRATEGY:
+  - Load the workbook with SheetJS: xlsx.readFile() or fetch + xlsx.read()
+  - Convert sheet to array of arrays: xlsx.utils.sheet_to_json(sheet, {header:1})
+  - Scan column B (index 1) for label text matches (use .includes() or .trim() === )
+  - Once a matching row is found, extract the numeric values from the month columns
+  - Month columns follow this pattern in the raw sheet:
+      Col index 4  = Jan value
+      Col index 7  = Feb value
+      Col index 10 = Mar value
+      Col index 13 = Apr value
+      Col index 16 = May value
+      Col index 19 = Jun value
+      Col index 22 = Jul value
+      Col index 25 = Aug value
+      Col index 28 = Sep value
+      Col index 31 = Oct value
+      Col index 34 = Nov value
+      Col index 37 = Dec value
+      Col index 40 = TOTAL
+  - Some cells may be null/undefined — treat as 0
+  - Some months may have "Closed" text instead of a number — treat as 0
+  - Build a dataService.js utility that exports a parsed financials object
+  - The parsed object shape should be:
+
+    {
+      months: ['Jan','Feb',...,'Dec'],
+      income: {
+        personal: [number x12],
+        trust: [number x12],
+        total: [number x12],
+        ytdTotal: number,
+        breakdown: {
+          ltcReimbursement: number,
+          socialSecurity: number,
+          trustTransfers: number,
+          rentalIncome: number,
+          brokerageClosed: number,
+          interest: number
+        }
+      },
+      expenses: {
+        personal: [number x12],
+        trust: [number x12],
+        total: [number x12],
+        ytdTotal: number,
+        visa: {
+          total: number,
+          clothing: number,
+          meals: number,
+          personalSupplies: number,
+          medical: number,
+          pharmacy: number,
+          hairAndNails: number,
+          aide: number,
+          blueCross: number,
+          other: number
+        },
+        vv1: {
+          hoa: number,
+          taxes: number,
+          repairMaintenance: number,
+          llcRegistration: number,
+          utilities: number,
+          insurance: number,
+          township: number
+        },
+        aideCare: number,
+        ltcReimbursementOut: number,
+        professional: number
+      },
+      net: {
+        monthly: [number x12],
+        ytdTotal: number
+      },
+      balances: {
+        personal9553: [number x12],
+        trust5777: [number x12],
+        trust5299: [number x12],
+        vv13952: [number x12],
+        vv16121: [number x12],
+        totalPersonal: [number x12],
+        totalTrust: [number x12],
+        grandTotal: [number x12]
+      },
+      accounts: [
+        { id: '9553', name: 'Main checking', type: 'Personal', status: 'active' },
+        { id: '5777', name: 'Trust checking', type: 'Trust', status: 'active' },
+        { id: '5299', name: 'Trust brokerage', type: 'Trust', status: 'active' },
+        { id: '3952', name: 'VV1 checking', type: 'Rental', status: 'active' },
+        { id: '6121', name: 'VV1 security deposit', type: 'Rental', status: 'active' },
+        { id: '9914', name: 'Checking', type: 'Personal', status: 'closed', closedDate: 'Feb 2025' },
+        { id: '7850', name: 'Brokerage', type: 'Personal', status: 'closed', closedDate: 'Feb 2025' }
+      ]
+    }
+
+---
+
+PROJECT STRUCTURE:
+/src
+  /components
+    MetricCard.jsx
+    MonthlyChart.jsx
+    IncomeBreakdown.jsx
+    ExpenseDonut.jsx
+    VisaBreakdown.jsx
+    VV1Expenses.jsx
+    BalanceTrend.jsx
+    AccountRegister.jsx
+    ChatAssistant.jsx
+    FileUpload.jsx
+  /data
+    2025_Rose_NEW_and_IMPROVED_Financials.xlsx  ← actual file, do not modify
+    dataService.js   ← all parsing logic lives here
+  /context
+    FinancialsContext.jsx  ← React context, loads Excel on mount, exposes parsed data
+  /pages
+    Dashboard.jsx
+    Chat.jsx
+  /api
+    chat.js   ← Vercel Edge Function (proxies OpenRouter)
+  App.jsx
+  main.jsx
+
+---
+
+DESIGN SYSTEM (match fathom.video aesthetic):
+- Background: #0a0a0a base, #111827 for cards
+- Accent: #06b6d4 (cyan), #10b981 (green for income), #ef4444 (red for expenses)
+- Card style: bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6
+- Text: white primary, gray-400 secondary, gray-500 tertiary
+- Font: Inter (import from Google Fonts)
+- Metric cards: large bold number, small muted label above, subtle cyan glow on hover
+- Charts: dark bg, no x-axis gridlines, white/5 y-axis lines, cyan/green/red palette
+- Buttons: bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-xl
+- Nav: sticky dark top bar, logo left, nav center, actions right
+
+---
+
+DASHBOARD LAYOUT:
+
+1. TOP NAV
+   - Logo: "RS Financials" with small cyan diamond SVG icon
+   - Nav tabs: Overview | Income | Expenses | Accounts | Chat
+   - Right: "Upload CSV" button + "Ask AI" cyan button
+
+2. PAGE HEADER
+   - Title: "Rosemary Schafer — Financial Dashboard"
+   - Subtitle: "January – December 2025 · Personal & Trust"
+   - "Last updated" badge showing file parse date
+
+3. METRIC CARDS (4, pulled from parsed Excel data)
+   - Total Income (green) ← income.ytdTotal
+   - Total Expenses (red) ← expenses.ytdTotal
+   - Net Income (red/green dynamic) ← net.ytdTotal
+   - Latest Balance (white) ← last non-null value from balances.trust5299
+
+4. MONTHLY CHART
+   - Grouped bar: income (green) + expenses (red) per month
+   - Net line overlay (cyan)
+   - All values from parsed Excel
+   - Footnote about Jan/Nov LTC spikes (derive from data — flag months where
+     expenses > 2x the median as "LTC reimbursement month")
+
+5. TWO-COLUMN: Income sources bar + Expense donut
+
+6. TWO-COLUMN: Visa categories bar + VV1 expenses bar
+
+7. TWO-COLUMN: Balance trend line chart + Account register table
+   - Account register last balance: pull latest non-null value per account
+
+---
+
+FILE UPLOAD FEATURE:
+- User can upload a NEW version of the Excel file or a QuickBooks CSV
+- On upload, re-run dataService.js parsing against the new file
+- Update FinancialsContext state — all charts and cards refresh automatically
+- Show success toast: "Loaded [filename] — [N] rows parsed"
+- Support both .xlsx and .csv formats
+
+---
+
+AI CHAT ASSISTANT:
+
+BACKEND — /api/chat.js (Vercel Edge Function):
+  - Accepts POST { messages: [], financialContext: {} }
+  - Reads OPENROUTER_API_KEY from process.env (never exposed to client)
+  - Calls OpenRouter: https://openrouter.ai/api/v1/chat/completions
+  - Model: use OPENROUTER_MODEL env var, default to "anthropic/claude-sonnet-4-6"
+  - Injects system prompt with the full financialContext JSON stringified
+  - Returns streamed response
+  - Handle CORS for Vercel
+
+FRONTEND — ChatAssistant.jsx:
+  - Floating cyan button bottom-right, opens slide-up dark panel
+  - On open, passes current FinancialsContext data as financialContext to /api/chat
+  - System prompt (injected server-side):
+    "You are a financial assistant for Rosemary Schafer's personal and trust accounts.
+     You have access to her complete 2025 financial data provided below as JSON.
+     Answer questions clearly and concisely. Format all currency with $ and commas.
+     When referencing specific months, use the month name. Explain LTC reimbursements
+     as timing differences — money Will paid out of pocket being reimbursed from the
+     trust, not actual losses. If asked about a specific account, reference its
+     account number and type. Data: {financialContext}"
+  - Support image uploads (base64, pass as vision message content)
+  - Support document/CSV uploads (parse text, inject into user message)
+  - Maintain last 10 messages in context
+  - Show typing indicator while streaming
+  - Render markdown in responses (use react-markdown)
+
+---
+
+ENV SETUP:
+.env.local:
+  VITE_API_BASE_URL=http://localhost:3000
+
+Vercel environment variables (set in dashboard):
+  OPENROUTER_API_KEY=your_key_here
+  OPENROUTER_MODEL=anthropic/claude-sonnet-4-6
+
+Note: OPENROUTER_API_KEY must NOT have VITE_ prefix — 
+it only lives server-side in the Edge Function.
+
+---
+
+VERCEL CONFIG (vercel.json):
+{
+  "framework": "vite",
+  "functions": {
+    "api/chat.js": {
+      "runtime": "edge"
+    }
+  }
+}
+
+---
+
+README.md should include:
+- Setup instructions (npm install, env vars, npm run dev)
+- How to replace the Excel file with an updated version
+- How to deploy to Vercel
+- How to add the OpenRouter API key
+- Explanation of the data parsing logic
+
+---
+
+IMPORTANT RULES FOR CLAUDE CODE:
+1. Never hardcode any dollar amounts — all values must come from parsing the Excel file
+2. dataService.js is the single source of truth for all parsing
+3. If a cell is empty, null, or contains text like "Closed" — treat as 0
+4. All chart components receive data as props from FinancialsContext
+5. The Excel file stays in /data and is bundled with the app (no external fetch needed)
+6. Make the app fully responsive for mobile
+7. Add loading state while Excel is being parsed on first mount
+8. Use Tailwind classes only — no custom CSS files

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, User } from 'lucide-react';
+import { Bot, User, Sparkles } from 'lucide-react';
 import { useFinancials } from '../context/FinancialsContext';
 import { readSSEStream } from '../utils/streamParser';
 import { AnimatedAIChat, TypingDots } from '../components/ui/animated-ai-chat';

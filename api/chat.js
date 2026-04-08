@@ -41,6 +41,7 @@ When referencing specific months, use the month name. Explain LTC reimbursements
 as timing differences — money Will paid out of pocket being reimbursed from the
 trust, not actual losses. If asked about a specific account, reference its
 account number and type.
+If QuickBooks CSV data is included, you can also reference that data when answering questions about transactions, categories, or line items from QuickBooks exports.
 
 Data: ${JSON.stringify(financialContext)}`;
 

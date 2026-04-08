@@ -39,7 +39,7 @@ function GlassFilter() {
 }
 
 export default function ChatAssistant() {
-  const { data } = useFinancials();
+  const { data, csvData } = useFinancials();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -69,6 +69,9 @@ export default function ChatAssistant() {
 
     try {
       const financialContext = data ? { ...data, _lastNonNull: undefined } : {};
+      if (csvData.length > 0) {
+        financialContext.quickbooksCsvData = csvData.map(f => ({ name: f.name, content: f.content.slice(0, 5000) }));
+      }
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

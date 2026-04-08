@@ -7,7 +7,7 @@ import { readSSEStream } from '../utils/streamParser';
 import { AnimatedAIChat, TypingDots } from '../components/ui/animated-ai-chat';
 
 export default function ChatPage() {
-  const { data } = useFinancials();
+  const { data, csvData } = useFinancials();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,9 @@ export default function ChatPage() {
 
     try {
       const financialContext = data ? { ...data, _lastNonNull: undefined } : {};
+      if (csvData.length > 0) {
+        financialContext.quickbooksCsvData = csvData.map(f => ({ name: f.name, content: f.content.slice(0, 5000) }));
+      }
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

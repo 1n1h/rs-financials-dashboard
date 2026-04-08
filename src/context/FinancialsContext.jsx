@@ -12,6 +12,7 @@ export function FinancialsProvider({ children }) {
   const [fileName, setFileName] = useState('2025_Rose_NEW_and_IMPROVED_Financials.xlsx');
   const [lastUpdated, setLastUpdated] = useState(null);
   const [toast, setToast] = useState(null);
+  const [csvData, setCsvData] = useState([]);
 
   useEffect(() => {
     loadFinancialsFromUrl(DATA_URL)
@@ -44,8 +45,19 @@ export function FinancialsProvider({ children }) {
     }
   }
 
+  function addCsvData(name, content) {
+    setCsvData(prev => [...prev, { name, content, date: new Date().toISOString() }]);
+  }
+
+  function removeCsvData(index) {
+    setCsvData(prev => prev.filter((_, i) => i !== index));
+  }
+
   return (
-    <FinancialsContext.Provider value={{ data, loading, error, fileName, lastUpdated, handleFileUpload, toast }}>
+    <FinancialsContext.Provider value={{
+      data, loading, error, fileName, lastUpdated, handleFileUpload, toast,
+      csvData, addCsvData, removeCsvData,
+    }}>
       {children}
     </FinancialsContext.Provider>
   );

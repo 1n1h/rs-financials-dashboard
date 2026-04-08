@@ -53,7 +53,19 @@ function StatCard({ value, label, delay }) {
 
 export default function Landing() {
   return (
-    <div className="bg-[#030303] min-h-screen">
+    <div className="bg-[#030303] min-h-screen relative">
+      {/* ===== TOP-RIGHT DASHBOARD BUTTON ===== */}
+      <div className="fixed top-5 right-6 z-50">
+        <Link to="/dashboard">
+          <LiquidButton size="sm" className="text-cyan-300">
+            <span className="flex items-center gap-2">
+              Dashboard
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          </LiquidButton>
+        </Link>
+      </div>
+
       {/* ===== HERO ===== */}
       <HeroGeometric
         badge="RS Financials"
@@ -254,6 +266,87 @@ export default function Landing() {
               </ol>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* ===== INTEGRATIONS ===== */}
+      <section className="py-24 px-4">
+        <div className="max-w-5xl mx-auto">
+          <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+            <p className="text-xs font-medium uppercase tracking-widest text-emerald-400 mb-4">Integrations</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">
+              Connect your accounting tools
+            </h2>
+            <p className="text-white/40 text-lg max-w-2xl mx-auto">
+              Link QuickBooks and Google Sheets to auto-sync data. New months are created automatically as transactions flow in.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div custom={1} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6"
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#2CA01C" />
+                  <path d="M7.5 8.5h2.5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H7.5v-7z" fill="white" />
+                  <path d="M16.5 15.5h-2.5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h2.5v7z" fill="white" />
+                </svg>
+              </div>
+              <h3 className="text-white font-semibold mb-2">QuickBooks Online</h3>
+              <ul className="space-y-2">
+                {[
+                  'Import P&L and Balance Sheet data',
+                  'Upload QuickBooks CSV exports for the AI',
+                  'Auto-create new months as data arrives',
+                  'Transaction-level detail coming soon',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-white/50">
+                    <ChevronRight className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            <motion.div custom={2} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6"
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+                  <rect x="4" y="2" width="16" height="20" rx="2" fill="#0F9D58" />
+                  <rect x="7" y="6" width="10" height="2" rx="0.5" fill="white" opacity="0.9" />
+                  <rect x="7" y="10" width="10" height="2" rx="0.5" fill="white" opacity="0.7" />
+                  <rect x="7" y="14" width="7" height="2" rx="0.5" fill="white" opacity="0.5" />
+                </svg>
+              </div>
+              <h3 className="text-white font-semibold mb-2">Google Sheets</h3>
+              <ul className="space-y-2">
+                {[
+                  'Link any Google Spreadsheet by URL',
+                  'Read financial data directly from sheets',
+                  'Push monthly summaries back to Sheets',
+                  'Scheduled sync (daily/weekly) coming soon',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-white/50">
+                    <ChevronRight className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+
+          <motion.div custom={3} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mt-8">
+            <Link to="/settings">
+              <LiquidButton size="lg" className="text-emerald-300">
+                <span className="flex items-center gap-2">
+                  Set Up Integrations
+                  <ArrowRight className="w-4 h-4" />
+                </span>
+              </LiquidButton>
+            </Link>
+          </motion.div>
         </div>
       </section>
 

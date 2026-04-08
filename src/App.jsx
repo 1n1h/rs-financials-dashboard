@@ -3,6 +3,7 @@ import { FinancialsProvider, useFinancials } from './context/FinancialsContext';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import ChatPage from './pages/Chat';
+import SettingsPage from './pages/Settings';
 import FileUpload from './components/FileUpload';
 import ChatAssistant from './components/ChatAssistant';
 import { LiquidButton } from './components/ui/liquid-glass-button';
@@ -33,6 +34,7 @@ function Nav() {
               <NavLink to="/" className={linkClass} end>Home</NavLink>
               <NavLink to="/dashboard" className={linkClass}>Dashboard</NavLink>
               <NavLink to="/chat" className={linkClass}>Chat</NavLink>
+              <NavLink to="/settings" className={linkClass}>Settings</NavLink>
             </div>
 
             <div className="flex items-center gap-3">
@@ -99,6 +101,7 @@ function AppLayout() {
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/chat" element={<ChatPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
       </div>

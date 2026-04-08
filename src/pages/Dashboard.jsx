@@ -44,12 +44,6 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 relative">
-      {/* Ambient background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-[10%] left-[15%] w-96 h-96 bg-cyan-500/[0.07] rounded-full filter blur-[128px] animate-pulse" />
-        <div className="absolute bottom-[10%] right-[10%] w-96 h-96 bg-emerald-500/[0.05] rounded-full filter blur-[128px] animate-pulse delay-700" />
-        <div className="absolute top-[40%] right-[25%] w-64 h-64 bg-violet-500/[0.05] rounded-full filter blur-[96px] animate-pulse delay-1000" />
-      </div>
 
       {/* Period Selector */}
       <div className="flex flex-wrap items-center gap-2">

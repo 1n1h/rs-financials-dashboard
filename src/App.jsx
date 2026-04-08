@@ -6,6 +6,7 @@ import ChatPage from './pages/Chat';
 import FileUpload from './components/FileUpload';
 import ChatAssistant from './components/ChatAssistant';
 import { LiquidButton } from './components/ui/liquid-glass-button';
+import { BeamsBackground } from './components/ui/beams-background';
 
 function Nav() {
   const { toast } = useFinancials();
@@ -89,15 +90,18 @@ function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#030303]">
-      <Nav />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader />
-        <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/chat" element={<ChatPage />} />
-        </Routes>
-      </main>
+    <div className="min-h-screen bg-[#030303] relative">
+      <BeamsBackground intensity="subtle" />
+      <div className="relative z-10">
+        <Nav />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <PageHeader />
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/chat" element={<ChatPage />} />
+          </Routes>
+        </main>
+      </div>
       <ChatAssistant />
     </div>
   );

@@ -76,11 +76,12 @@ export default function ChatAssistant() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const bottomRef = useRef(null);
   const fileRef = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
   useEffect(() => {
@@ -192,7 +193,7 @@ export default function ChatAssistant() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40, scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-          className="fixed bottom-0 right-0 z-50 w-full sm:w-[440px] h-[640px] sm:bottom-6 sm:right-6 sm:rounded-2xl flex flex-col overflow-hidden"
+          className="fixed inset-0 sm:inset-auto z-50 w-full sm:w-[440px] h-full sm:h-[640px] sm:bottom-6 sm:right-6 sm:rounded-2xl flex flex-col overflow-hidden"
         >
           {/* Ambient glow behind panel */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden sm:rounded-2xl">
@@ -285,6 +286,9 @@ export default function ChatAssistant() {
             <AnimatePresence>
               {showTyping && <PulsingOrb />}
             </AnimatePresence>
+
+            {/* Scroll anchor */}
+            <div ref={bottomRef} />
           </div>
 
           {/* Input */}

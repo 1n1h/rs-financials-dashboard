@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, User, Sparkles } from 'lucide-react';
+import { Sparkles, User } from 'lucide-react';
 import { useFinancials } from '../context/FinancialsContext';
 import { readSSEStream } from '../utils/streamParser';
 import { AnimatedAIChat, TypingDots } from '../components/ui/animated-ai-chat';
@@ -14,10 +14,18 @@ export default function ChatPage() {
   const [attachments, setAttachments] = useState([]);
   const scrollRef = useRef(null);
   const fileRef = useRef(null);
+  const bottomRef = useRef(null);
 
+  // Always scroll to bottom when messages or loading changes
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  const showTyping = loading && (
+    messages.length === 0 ||
+    messages[messages.length - 1]?.role !== 'assistant' ||
+    messages[messages.length - 1]?.content === ''
+  );
 
   async function sendMessage() {
     const text = input.trim();
@@ -94,21 +102,14 @@ export default function ChatPage() {
   const hasMessages = messages.length > 0;
 
   return (
-    <div className="min-h-[calc(100vh-180px)] flex flex-col w-full items-center justify-center text-white relative overflow-hidden">
-      {/* Ambient background */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse delay-700" />
-        <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-violet-500/10 rounded-full mix-blend-normal filter blur-[96px] animate-pulse delay-1000" />
-      </div>
-
+    <div className="flex flex-col w-full text-white relative" style={{ height: 'calc(100dvh - 140px)' }}>
       <input ref={fileRef} type="file" className="hidden" onChange={onFileChange} />
 
-      <div className="w-full max-w-2xl mx-auto relative z-10 flex flex-col" style={{ minHeight: 'calc(100vh - 220px)' }}>
+      <div className="w-full max-w-2xl mx-auto relative z-10 flex flex-col flex-1 min-h-0 px-2 sm:px-0">
         {/* Header area — shown when no messages */}
-        {!hasMessages && (
+        {!hasMessages && !loading && (
           <motion.div
-            className="text-center space-y-3 pt-12 pb-8"
+            className="text-center space-y-3 pt-8 sm:pt-12 pb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -119,7 +120,7 @@ export default function ChatPage() {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="inline-block"
             >
-              <h1 className="text-3xl font-medium tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white/90 to-white/40 pb-1">
+              <h1 className="text-2xl sm:text-3xl font-medium tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white/90 to-white/40 pb-1">
                 How can I help today?
               </h1>
               <motion.div
@@ -135,25 +136,26 @@ export default function ChatPage() {
           </motion.div>
         )}
 
-        {/* Messages */}
+        {/* Messages area — scrollable */}
         {hasMessages && (
-          <div ref={scrollRef} className="flex-1 overflow-y-auto py-6 space-y-6 mb-4">
-            <AnimatePresence>
-              {messages.map((msg, i) => (
+          <div ref={scrollRef} className="flex-1 overflow-y-auto py-4 sm:py-6 space-y-4 sm:space-y-6 min-h-0">
+            {messages.map((msg, i) => {
+              if (msg.role === 'assistant' && msg.content === '') return null;
+              return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex gap-2 sm:gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mt-1">
-                      <Bot className="w-4 h-4 text-cyan-400" />
+                    <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mt-1">
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
                     </div>
                   )}
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                    className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm ${
                       msg.role === 'user'
                         ? 'bg-white/[0.08] border border-white/[0.06] text-white/90'
                         : 'bg-white/[0.03] border border-white/[0.04] text-white/80'
@@ -161,45 +163,62 @@ export default function ChatPage() {
                   >
                     {msg.role === 'assistant' ? (
                       <div className="chat-markdown">
-                        <ReactMarkdown>{msg.content || '...'}</ReactMarkdown>
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     ) : (
                       <p className="whitespace-pre-wrap">{msg.content}</p>
                     )}
                   </div>
                   {msg.role === 'user' && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center mt-1">
-                      <User className="w-4 h-4 text-white/60" />
+                    <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center mt-1">
+                      <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/60" />
                     </div>
                   )}
                 </motion.div>
-              ))}
-            </AnimatePresence>
+              );
+            })}
 
             {/* Typing indicator */}
-            {loading && messages[messages.length - 1]?.role !== 'assistant' && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-3"
-              >
-                <div className="w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-cyan-400" />
-                </div>
-                <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.04] rounded-2xl px-4 py-3">
-                  <span className="text-sm text-white/50">Thinking</span>
-                  <TypingDots />
-                </div>
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {showTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="flex items-center gap-2.5"
+                >
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
+                    </motion.div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] rounded-2xl px-4 py-2.5">
+                    <motion.span
+                      className="text-sm text-white/50"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      Thinking
+                    </motion.span>
+                    <TypingDots />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Scroll anchor */}
+            <div ref={bottomRef} />
           </div>
         )}
 
         {/* Spacer to push input down when no messages */}
         {!hasMessages && <div className="flex-1" />}
 
-        {/* Animated Input */}
-        <div className="pb-6">
+        {/* Animated Input — sticky at bottom */}
+        <div className="pb-4 sm:pb-6 pt-2 flex-shrink-0">
           <AnimatedAIChat
             value={input}
             setValue={setInput}
@@ -211,28 +230,6 @@ export default function ChatPage() {
           />
         </div>
       </div>
-
-      {/* Floating thinking indicator */}
-      <AnimatePresence>
-        {loading && hasMessages && (
-          <motion.div
-            className="fixed bottom-8 left-1/2 transform -translate-x-1/2 backdrop-blur-2xl bg-white/[0.02] rounded-full px-4 py-2 shadow-lg border border-white/[0.05] z-50"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-7 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                <Sparkles className="w-3 h-3 text-cyan-400" />
-              </div>
-              <div className="flex items-center gap-2 text-sm text-white/70">
-                <span>Analyzing</span>
-                <TypingDots />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

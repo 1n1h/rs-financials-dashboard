@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useFinancials } from '../context/FinancialsContext';
+import { readSSEStream } from '../utils/streamParser';
 
 export default function ChatPage() {
   const { data } = useFinancials();
@@ -37,34 +38,17 @@ export default function ChatPage() {
 
       if (!res.ok) throw new Error('Chat API error');
 
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
       let assistantText = '';
-
       setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
 
-      while (reader) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const payload = line.slice(6);
-            if (payload === '[DONE]') continue;
-            try {
-              const json = JSON.parse(payload);
-              const delta = json.choices?.[0]?.delta?.content || '';
-              assistantText += delta;
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1] = { role: 'assistant', content: assistantText };
-                return updated;
-              });
-            } catch { /* skip */ }
-          }
-        }
-      }
+      await readSSEStream(res, (delta) => {
+        assistantText += delta;
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: assistantText };
+          return updated;
+        });
+      });
     } catch {
       setMessages((prev) => [...prev, { role: 'assistant', content: 'Unable to connect to the AI service. Ensure the API is configured.' }]);
     } finally {
@@ -104,7 +88,7 @@ export default function ChatPage() {
                 msg.role === 'user' ? 'bg-cyan-500 text-black' : 'bg-white/5 text-gray-200'
               }`}>
                 {msg.role === 'assistant' ? (
-                  <div className="prose prose-invert prose-sm max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0">
+                  <div className="chat-markdown">
                     <ReactMarkdown>{msg.content || '...'}</ReactMarkdown>
                   </div>
                 ) : (

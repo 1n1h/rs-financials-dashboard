@@ -9,6 +9,8 @@ import VV1Expenses from '../components/VV1Expenses';
 import BalanceTrend from '../components/BalanceTrend';
 import AccountRegister from '../components/AccountRegister';
 import MonthDetail from '../components/MonthDetail';
+import ReimbursementOverview from '../components/ReimbursementOverview';
+import PersonalVsTrust from '../components/PersonalVsTrust';
 import { LiquidButton } from '../components/ui/liquid-glass-button';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -85,6 +87,12 @@ export default function Dashboard() {
             expenses={data.expenses.total}
             net={data.net.monthly}
           />
+
+          {/* LTC Reimbursement + Personal vs Trust */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ReimbursementOverview data={data} />
+            <PersonalVsTrust data={data} />
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <IncomeBreakdown breakdown={data.income.breakdown} />

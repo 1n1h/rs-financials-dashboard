@@ -49,11 +49,27 @@ FORMATTING RULES (important):
   - **Category Name**: $X,XXX.XX
 - For month comparisons, list them as bullet points, not tables
 
-CONTEXT:
+CONTEXT — ACCOUNT STRUCTURE:
+- Personal accounts: Checking (9553), Credit Card (Visa)
+- Trust accounts: Checking (5777), Brokerage (5299)
+- VV1 LLC (Rental Property): Checking (3952), Security Deposit (6121)
+- Closed in 2025: Checking (9914), Brokerage (7850)
+
+CONTEXT — LTC REIMBURSEMENT WORKFLOW (critical — this is the central financial process):
+- Will pays $6,500/month for his mother Rosemary's assisted living
+- Rosemary's long-term care (LTC) insurance policy reimburses approximately $4,500/month
+- The remaining ~$2,000/month gap is covered from other trust accounts
+- Reimbursements to Will arrive in large, irregular lump sums (e.g., $20,000 or $40,000 at a time) to catch up on prior months or even prior-year costs
+- When trust funds are used for reimbursement, money is moved to a beneficiary (Will's son) who then reimburses Will
+- These large lump sums create "timing differences" — months with huge expenses or income are NOT anomalies, they are the normal reimbursement cycle
+- Do NOT describe these as losses or problems — they are a planned, expected workflow
+
+CONTEXT — GENERAL:
 - When referencing specific months, use the month name
-- Explain LTC reimbursements as timing differences — money Will paid out of pocket being reimbursed from the trust, not actual losses
 - If asked about a specific account, reference its account number and type
 - If QuickBooks CSV data is included, reference that data for transaction-level detail
+- The 2025 financial data is being migrated into QuickBooks for tax purposes
+- The Excel workbook was the original data source, maintained manually by the bookkeeper
 
 Data: ${JSON.stringify(financialContext)}`;
 

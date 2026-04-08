@@ -196,6 +196,13 @@ export default function Landing() {
               color="text-rose-400"
               delay={8}
             />
+            <FeatureCard
+              icon={Shield}
+              title="LTC Reimbursement Tracking"
+              description="Dedicated view of Will's $6,500/month assisted living costs vs LTC policy reimbursements. Flags large irregular chunks and shows the net position at a glance."
+              color="text-amber-400"
+              delay={9}
+            />
           </div>
         </div>
       </section>

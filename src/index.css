@@ -1,12 +1,98 @@
 @import "tailwindcss";
 
 @theme {
-  --color-card: rgba(255, 255, 255, 0.05);
-  --color-card-border: rgba(255, 255, 255, 0.1);
-  --color-surface: #111827;
+  --color-card: var(--t-card);
+  --color-card-border: var(--t-card-border);
+  --color-surface: var(--t-surface);
   --color-accent: #06b6d4;
   --color-income: #10b981;
   --color-expense: #ef4444;
+  --color-page-bg: var(--t-page-bg);
+  --color-text-primary: var(--t-text-primary);
+  --color-text-secondary: var(--t-text-secondary);
+  --color-text-muted: var(--t-text-muted);
+  --color-glass: var(--t-glass);
+  --color-glass-border: var(--t-glass-border);
+  --color-glass-hover: var(--t-glass-hover);
+  --color-nav-bg: var(--t-nav-bg);
+}
+
+/* Dark theme (default) */
+:root, [data-theme="dark"] {
+  --t-page-bg: #030303;
+  --t-card: rgba(255, 255, 255, 0.03);
+  --t-card-border: rgba(255, 255, 255, 0.06);
+  --t-surface: #111827;
+  --t-text-primary: rgba(255, 255, 255, 0.9);
+  --t-text-secondary: rgba(255, 255, 255, 0.4);
+  --t-text-muted: rgba(255, 255, 255, 0.2);
+  --t-glass: rgba(255, 255, 255, 0.03);
+  --t-glass-border: rgba(255, 255, 255, 0.06);
+  --t-glass-hover: rgba(255, 255, 255, 0.06);
+  --t-nav-bg: rgba(3, 3, 3, 0.6);
+  color-scheme: dark;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --t-page-bg: #f5f7fa;
+  --t-card: rgba(255, 255, 255, 0.7);
+  --t-card-border: rgba(0, 0, 0, 0.08);
+  --t-surface: #ffffff;
+  --t-text-primary: rgba(0, 0, 0, 0.85);
+  --t-text-secondary: rgba(0, 0, 0, 0.5);
+  --t-text-muted: rgba(0, 0, 0, 0.25);
+  --t-glass: rgba(255, 255, 255, 0.6);
+  --t-glass-border: rgba(0, 0, 0, 0.08);
+  --t-glass-hover: rgba(255, 255, 255, 0.8);
+  --t-nav-bg: rgba(255, 255, 255, 0.7);
+  color-scheme: light;
+}
+
+[data-theme="light"] body {
+  background: #f5f7fa;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* Light theme chart card overrides */
+[data-theme="light"] .chat-markdown {
+  color: rgba(0, 0, 0, 0.7);
+}
+[data-theme="light"] .chat-markdown strong {
+  color: rgba(0, 0, 0, 0.9);
+}
+[data-theme="light"] .chat-markdown h1,
+[data-theme="light"] .chat-markdown h2,
+[data-theme="light"] .chat-markdown h3 {
+  color: rgba(0, 0, 0, 0.9);
+}
+[data-theme="light"] .chat-markdown h3 {
+  color: #0891b2;
+}
+[data-theme="light"] .chat-markdown ul li::before {
+  background: #0891b2;
+}
+[data-theme="light"] .chat-markdown code {
+  background: rgba(0, 0, 0, 0.06);
+  color: #0891b2;
+}
+[data-theme="light"] .chat-markdown pre {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .chat-markdown pre code {
+  color: rgba(0, 0, 0, 0.7);
+}
+[data-theme="light"] .chat-markdown th {
+  background: rgba(8, 145, 178, 0.08);
+  color: #0891b2;
+}
+[data-theme="light"] .chat-markdown td {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .chat-markdown th {
+  border-color: rgba(0, 0, 0, 0.06);
 }
 
 ::-webkit-scrollbar {

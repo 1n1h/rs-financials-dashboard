@@ -9,7 +9,7 @@ import { useFinancials } from '../context/FinancialsContext';
 
 function IntegrationCard({ icon, title, description, connected, children, onDisconnect }) {
   return (
-    <div className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
+    <div className="backdrop-blur-xl bg-glass border border-glass-border rounded-2xl p-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
       <div className="relative">
         <div className="flex items-start justify-between mb-4">

@@ -1,10 +1,10 @@
 export default function MetricCard({ label, value, color = 'white', prefix = '$' }) {
   const colorMap = {
-    green: 'text-emerald-400',
-    red: 'text-red-400',
-    cyan: 'text-cyan-400',
-    white: 'text-white',
-    dynamic: value >= 0 ? 'text-emerald-400' : 'text-red-400',
+    green: 'text-emerald-500',
+    red: 'text-red-500',
+    cyan: 'text-cyan-500',
+    white: 'text-text-primary',
+    dynamic: value >= 0 ? 'text-emerald-500' : 'text-red-500',
   };
 
   const glowMap = {
@@ -30,9 +30,8 @@ export default function MetricCard({ label, value, color = 'white', prefix = '$'
   };
 
   return (
-    <div className={`relative backdrop-blur-xl bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 transition-all duration-500 ${glowMap[color]} ${borderGlow[color]} hover:bg-white/[0.05] group overflow-hidden`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
-      <p className="relative text-xs font-medium uppercase tracking-wider text-white/40 mb-2">{label}</p>
+    <div className={`relative backdrop-blur-xl bg-glass border border-glass-border rounded-2xl p-6 transition-all duration-500 ${glowMap[color]} ${borderGlow[color]} hover:bg-glass-hover group overflow-hidden`}>
+      <p className="relative text-xs font-medium uppercase tracking-wider text-text-secondary mb-2">{label}</p>
       <p className={`relative text-3xl font-bold ${colorMap[color]} tracking-tight`}>
         {fmt(value)}
       </p>

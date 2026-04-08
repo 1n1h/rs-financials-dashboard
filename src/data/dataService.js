@@ -208,6 +208,64 @@ export function parseFinancials(workbook) {
   const netYtd = getRowTotal(data, netIncomeRow, MAIN_TOTAL_COL) ||
     netMonthly.reduce((a, b) => a + b, 0);
 
+  // --- LINE ITEMS (every row with monthly values for the detail view) ---
+  const lineItemDefs = [
+    // Income - Personal
+    { row: interest9553Row, label: 'Interest (9553)', category: 'Income', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: ltcReimbRow, label: 'LTC Reimbursement', category: 'Income', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: socialSecRow, label: 'Social Security', category: 'Income', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: findRow(data, '9553 ltc reimbursement to ws'), label: 'LTC Reimb to WS (9553)', category: 'Income', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: findRow(data, '9553  other'), label: 'Other (9553)', category: 'Income', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: findRow(data, '9914 interest'), label: 'Interest (9914 Closed)', category: 'Income', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: brokerageClosedRow, label: 'Brokerage (7850 Closed)', category: 'Income', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    // Income - Trust
+    { row: interest5777Row, label: 'Interest (5777)', category: 'Income', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: trustTransferRow, label: 'Trust Transfers (5777)', category: 'Income', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: interestVV1Row, label: 'VV1 Interest (3952)', category: 'Income', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: rentalIncomeRow, label: 'Rental Income (3952)', category: 'Income', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: findRow(data, '3952  vv1 other'), label: 'VV1 Other (3952)', category: 'Income', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: findRow(data, '5299  brokerage'), label: 'Brokerage (5299)', category: 'Income', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    // Expenses - Personal Visa
+    { row: visaClothingRow, label: 'Visa Clothing', category: 'Expense', section: 'Personal Visa', cols: SUB_MONTH_COLS, totalCol: SUB_TOTAL_COL },
+    { row: visaMealsRow, label: 'Visa Meals/Entertainment', category: 'Expense', section: 'Personal Visa', cols: SUB_MONTH_COLS, totalCol: SUB_TOTAL_COL },
+    { row: visaPersonalSuppliesRow, label: 'Visa Personal Supplies', category: 'Expense', section: 'Personal Visa', cols: SUB_MONTH_COLS, totalCol: SUB_TOTAL_COL },
+    { row: visaMedicalRow, label: 'Visa Medical', category: 'Expense', section: 'Personal Visa', cols: SUB_MONTH_COLS, totalCol: SUB_TOTAL_COL },
+    { row: visaPharmacyRow, label: 'Visa Pharmacy', category: 'Expense', section: 'Personal Visa', cols: SUB_MONTH_COLS, totalCol: SUB_TOTAL_COL },
+    { row: visaHairRow, label: 'Visa Hair & Nails', category: 'Expense', section: 'Personal Visa', cols: SUB_MONTH_COLS, totalCol: SUB_TOTAL_COL },
+    { row: visaAideRow, label: 'Visa Aide', category: 'Expense', section: 'Personal Visa', cols: SUB_MONTH_COLS, totalCol: SUB_TOTAL_COL },
+    // Expenses - Personal Other
+    { row: blueCrossRow, label: 'Blue Cross Blue Shield', category: 'Expense', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: aideHelpRow, label: 'Aide Help', category: 'Expense', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: ltcOutPersonalRow, label: 'Asst Living/LTC Reimb', category: 'Expense', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: findRowByIndex(data, 'assisted living/ltc', 60), label: 'Assisted Living/LTC (7850)', category: 'Expense', section: 'Personal', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    // Expenses - VV1
+    { row: repairRow, label: 'Visa Repair & Maintenance', category: 'Expense', section: 'VV1', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: hoaRow, label: 'HOA', category: 'Expense', section: 'VV1', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: llcRow, label: 'LLC Registration', category: 'Expense', section: 'VV1', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: utilitiesRow, label: 'Utilities', category: 'Expense', section: 'VV1', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: townshipRow, label: 'Township', category: 'Expense', section: 'VV1', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: insuranceRow, label: 'Insurance', category: 'Expense', section: 'VV1', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: taxesRow, label: 'Taxes', category: 'Expense', section: 'VV1', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    // Expenses - Trust Other
+    { row: ltcOutTrustRow, label: 'Reimb to WS for LTC', category: 'Expense', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: findRowByIndex(data, 'assisted living/ltc', 95), label: 'Assisted Living/LTC (5777)', category: 'Expense', section: 'Trust', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    // Professional
+    { row: accountantRow, label: 'Accountant', category: 'Expense', section: 'Professional', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: bookkeeperRow, label: 'Bookkeeper', category: 'Expense', section: 'Professional', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+    { row: legalRow, label: 'Legal', category: 'Expense', section: 'Professional', cols: MAIN_MONTH_COLS, totalCol: MAIN_TOTAL_COL },
+  ];
+
+  const lineItems = lineItemDefs
+    .filter(d => d.row >= 0)
+    .map(d => ({
+      label: d.label,
+      category: d.category,
+      section: d.section,
+      monthly: getRowData(data, d.row, d.cols),
+      total: getRowTotal(data, d.row, d.totalCol) || getRowData(data, d.row, d.cols).reduce((a, b) => a + b, 0),
+    }))
+    .filter(item => item.total !== 0 || item.monthly.some(v => v !== 0));
+
   return {
     months: MONTHS,
     income: {
@@ -256,6 +314,7 @@ export function parseFinancials(workbook) {
       monthly: netMonthly,
       ytdTotal: netYtd,
     },
+    lineItems,
     balances,
     accounts: [
       { id: '9553', name: 'Main Checking', type: 'Personal', status: 'active' },
